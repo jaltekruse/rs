@@ -309,8 +309,8 @@ with Live(generate_table(status), refresh_per_second=4) as lt:
             "docker-compose.yml",
             "-f",
             "author.compose.yml",
-            "--progress",
-            "plain",
+            # "--progress",
+            # "plain",
             "build",
             service,
         ]
