@@ -13,7 +13,7 @@ ARG wheel=author_server-1.0.0-py3-none-any.whl
 #     texlive: 1
 # The docker-compose command would look like this:
 # docker-compose build --build-arg texlive=1
-ARG texlive=1
+ARG texlive=0
 
 # set work directory
 WORKDIR /usr/src/app
@@ -30,9 +30,9 @@ RUN pip install --upgrade pip
 RUN apt update
 RUN apt install -y rsync
 
-RUN if [ $texlive = 1 ]; \
-    then  apt install -y --fix-missing git texlive-full xsltproc pdf2svg sagemath; \
-    fi
+#RUN if [ $texlive = 1 ]; \
+#    then  apt install -y --fix-missing git texlive-full xsltproc pdf2svg sagemath; \
+#    fi
 
 # copy project
 COPY ./dist/$wheel /usr/src/app/$wheel
