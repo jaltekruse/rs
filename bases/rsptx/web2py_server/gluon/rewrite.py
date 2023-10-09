@@ -104,7 +104,7 @@ def _params_default(app=None):
     p.error_handler = None
     p.error_message = "<html><body><h1>%s</h1></body></html>"
     p.error_message_ticket = (
-        '<html><body><h1>Internal error</h1>Ticket issued: <a href="/admin/default/ticket/%(ticket)s" target="_blank">%(ticket)s</a></body><!-- this is junk text else IE does not display the page: '
+        '<html><body><h1>Internal error</h1>Ticket issued here(Jason): <a href="/admin/default/ticket/%(ticket)s" target="_blank">%(ticket)s</a></body><!-- this is junk text else IE does not display the page: '
         + ("x" * 512)
         + " //--></html>"
     )

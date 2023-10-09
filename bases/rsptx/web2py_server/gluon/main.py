@@ -515,8 +515,10 @@ def wsgibase(environ, responder):
                 if request.tickets_db:
                     ticket = e.log(request) or 'unknown'
 
+                logger.warn('JASON IS WRITIGN SOEMTHING TO LOG')
+                logger.warn(e.msg)
                 http_response = \
-                    HTTP(500, rwthread.routes.error_message_ticket %
+                    HTTP(500, e.msg + rwthread.routes.error_message_ticket %
                          dict(ticket=ticket),
                          web2py_error='ticket %s' % ticket)
 
