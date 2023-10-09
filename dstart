@@ -21,7 +21,7 @@ fi
 # check to see if the SERVICE is book
 if [ "$SERVICE" == "book" ]; then
     echo "Starting the book service on port 8100"
-    uvicorn rsptx.book_server_api.main:app --host 0.0.0.0 --port 8100 --reload
+    uvicorn rsptx.book_server_api.main:app --host 0.0.0.0 --port 8111 --reload
     exit 0
 fi
 
@@ -40,7 +40,7 @@ fi
 if [ "$SERVICE" == "runestone" ]; then
     echo "Starting the web2py service on port 8103"
     cd bases/rsptx/web2py_server
-    python web2py.py --no-gui --password "<recycle>" --ip 0.0.0.0 --port 8103
+    python web2py.py --no-gui --password "<recycle>" --ip 0.0.0.0 --port 8103 --reload 
     exit 0
 fi
 

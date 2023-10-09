@@ -112,7 +112,7 @@ async def log_book_event(
     :param user: The user object.
     """
     rslogger.info(f"!@$!#$!#$!#$!#$ Jason logging something")
-    return make_json_response(status=status.HTTP_201_CREATED, detail=dict(info='Jason is cool'))
+    # return make_json_response(status=status.HTTP_201_CREATED, detail=dict(info='Jason is dumb'))
     # if entry.sid is there use that (likely for partner or group work)
     if not entry.sid:
         entry.sid = user.username
@@ -169,7 +169,7 @@ async def log_book_event(
             ans_idx = await create_answer_table_entry(valid_table, entry.event)
             rslogger.debug(ans_idx)
 
-    return make_json_response(status=status.HTTP_201_CREATED, detail=dict(info='Jason is cool'))
+    # return make_json_response(status=status.HTTP_201_CREATED, detail=dict(info='Jason is cool'))
     if idx:
         return make_json_response(status=status.HTTP_201_CREATED, detail=response_dict)
     else:

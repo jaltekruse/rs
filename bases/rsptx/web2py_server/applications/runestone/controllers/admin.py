@@ -1534,6 +1534,7 @@ def createquestion():
     if g:
         question_type = g.group(1)
         if question_type != request.vars["template"]:
+            # TODO - should this fail louder, rather than just logging a message on the server?
             logger.error(f"question mismatch for question type {question_type}")
 
     try:
