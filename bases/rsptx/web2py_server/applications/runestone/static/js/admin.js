@@ -1976,8 +1976,16 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
     ) {
         componentKind = "webwork";
     }
+
+    if (componentSrc.indexOf("doenet") >= 0) {
+        componentKind = "doenet";
+    }
+
+    console.log(componentKind);
     // Import all the js needed for this component before rendering
-    await runestoneComponents.runestone_import(componentKind);
+    if (componentKind != "doenet") {
+        await runestoneComponents.runestone_import(componentKind);
+    }
     let opt = {};
     opt.orig = jQuery(`#${whereDiv} [data-component]`)[0];
     if (opt.orig) {
@@ -1995,12 +2003,15 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
         }
     }
 
-    if (typeof component_factory === "undefined") {
+    if (typeof component_factory === "undefined" && componentKind != "doenet") {
         alert(
             "Error:  Missing the component factory!  probably a webpack version mismatch"
         );
     } else {
-        if (!component_factory[componentKind] && !jQuery(`#${whereDiv}`).html()) {
+        if (componentKind == "doenet") {
+            console.log("wonder if I need to do something here");
+
+        } else if (!component_factory[componentKind] && !jQuery(`#${whereDiv}`).html()) {
             jQuery(`#${whereDiv}`).html(
                 `<p>Preview not available for ${componentKind}</p>`
             );
@@ -2089,7 +2100,13 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
         }
         // $(`#${whereDiv}`).css("background-color", "white");
     }
-    MathJax.typeset([document.querySelector(`#${whereDiv}`)]);
+    
+
+    if (componentKind == "doenet") {
+        window.renderDoenetToContainer(document.querySelector(".doenetml-applet"));
+    } else {
+        MathJax.typeset([document.querySelector(`#${whereDiv}`)]);
+    }
 }
 
 // Called by the "Search" button in the "Search question bank" panel.

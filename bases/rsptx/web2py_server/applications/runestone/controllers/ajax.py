@@ -1417,6 +1417,7 @@ def preview_question():
 
 """
 
+    logger.debug("preview question")
     try:
         code = begin + dedent(json.loads(request.vars.code)) + end
         with open(
@@ -1427,6 +1428,7 @@ def preview_question():
             encoding="utf-8",
         ) as ixf:
             ixf.write(code)
+        logger.debug("preview question 1")
 
         # Note that ``os.environ`` isn't a dict, it's an object whose setter modifies environment variables. So, modifications of a copy/deepcopy still `modify the original environment <https://stackoverflow.com/questions/13142972/using-copy-deepcopy-on-os-environ-in-python-appears-broken>`_. Therefore, convert it to a dict, where modifications will not affect the environment.
         env = dict(os.environ)
@@ -1441,6 +1443,7 @@ def preview_question():
             return json.dumps(
                 f"Error: settings.python_interpreter must be set to a valid interpreter not {settings.python_interpreter}"
             )
+        '''
         popen_obj = subprocess.Popen(
             [settings.python_interpreter, "-m", "runestone", "build"],
             # The build must be run from the directory containing a ``conf.py`` and all the needed support files.
@@ -1452,11 +1455,12 @@ def preview_question():
             # Pass the modified environment which doesn't contain ``DBURL``.
             env=env,
         )
+        logger.debug("preview question 2")
         stdout, stderr = popen_obj.communicate()
         # If there was an error, return stdout and stderr from the build.
         if popen_obj.returncode != 0:
             return json.dumps(
-                "Error: Runestone build failed:\n\n" + stdout + "\n" + stderr
+                "Error: Runestone build failed:\n\n========== STDOUT ============" + stdout + "\n ======== STDERR ==========" + stderr
             )
 
         with open(
@@ -1466,8 +1470,23 @@ def preview_question():
             "r",
             encoding="utf-8",
         ) as ixf:
-            src = ixf.read()
+        '''
+        if True:
+            logger.debug("preview question 3")
+            #src = ixf.read()
+            htmlSrc = \
+            '''<div class=\".runestone\" data-component=\"something]\">
+                    <div class="doenetml-applet">
+                    <script type="text/doenetml">
+            ''' + request.vars.code + '''
+                    </script>
+                </div>
+            </div>
+            '''
+ 
+            src = "<begin_directive>" + htmlSrc + "</div><end_directive>"
             tree = html.fromstring(src)
+            '''
             if len(tree.cssselect(".runestone")) == 0:
                 src = ""
             result = re.search(
@@ -1483,6 +1502,8 @@ def preview_question():
                 else:
                     ctext = "Error: Runestone content missing."
             return json.dumps(ctext)
+            '''
+            return json.dumps(htmlSrc)
     except Exception as ex:
         return json.dumps("Error: {}".format(ex))
 
