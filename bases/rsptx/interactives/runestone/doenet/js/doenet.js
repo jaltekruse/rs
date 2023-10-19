@@ -11,11 +11,30 @@ import RunestoneBase from "../../common/js/runestonebase.js";
 export class Doenet extends RunestoneBase {
   constructor(opts) {
     super(opts);
+    console.log(opts);
     this.doenetML = opts.doenetML;
     var orig = $(opts.orig).find("div")[0];
+    console.log(`${eBookConfig.new_server_prefix}/logger/bookevent`);
+    console.log("still more whatever");
+    console.log("bahhhhh");
     // todo - think about how we pass around the doenetML
     //window.renderDoenetToContainer(orig, this.doenetML);
-    window.renderDoenetToContainer(orig);
+    window.renderDoenetToContainer(orig, this.doenetML, {
+      apiURLs: {
+        saveCreditForItem: `${eBookConfig.new_server_prefix}/logger/bookevent`
+      },
+      apiTemplates: {
+        saveCreditForItem: JSON.stringify({
+          opts
+        })
+
+      },
+      flags : {
+        allowSaveSubmissions: true,
+        allowSaveEvents: true,
+        autoSubmit: true,
+      }
+    });
   }
 
   async logCurrentAnswer(sid) {
