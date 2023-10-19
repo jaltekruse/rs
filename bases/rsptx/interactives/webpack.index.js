@@ -64,6 +64,7 @@ const module_map = {
         import("./runestone/clickableArea/js/timedclickable.js"),
     codelens: () => import("./runestone/codelens/js/codelens.js"),
     datafile: () => import("./runestone/datafile/js/datafile.js"),
+    doenet: () => import("./runestone/doenet/js/doenet.js"),
     dragndrop: () => import("./runestone/dragndrop/js/timeddnd.js"),
     fillintheblank: () => import("./runestone/fitb/js/timedfitb.js"),
     groupsub: () => import("./runestone/groupsub/js/groupsub.js"),

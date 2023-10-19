@@ -1983,9 +1983,10 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
 
     console.log(componentKind);
     // Import all the js needed for this component before rendering
-    if (componentKind != "doenet") {
-        await runestoneComponents.runestone_import(componentKind);
-    }
+    // if (componentKind != "doenet") {
+    //     await runestoneComponents.runestone_import(componentKind);
+    // }
+    await runestoneComponents.runestone_import(componentKind);
     let opt = {};
     opt.orig = jQuery(`#${whereDiv} [data-component]`)[0];
     if (opt.orig) {
@@ -2008,7 +2009,7 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
             "Error:  Missing the component factory!  probably a webpack version mismatch"
         );
     } else {
-        if (componentKind == "doenet") {
+        if (false && componentKind == "doenet") {
             console.log("wonder if I need to do something here");
 
         } else if (!component_factory[componentKind] && !jQuery(`#${whereDiv}`).html()) {
@@ -2103,7 +2104,7 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
     
 
     if (componentKind == "doenet") {
-        window.renderDoenetToContainer(document.querySelector(".doenetml-applet"));
+        //window.renderDoenetToContainer(document.querySelector(".doenetml-applet"));
     } else {
         MathJax.typeset([document.querySelector(`#${whereDiv}`)]);
     }

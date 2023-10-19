@@ -1475,7 +1475,7 @@ def preview_question():
             logger.debug("preview question 3")
             #src = ixf.read()
             htmlSrc = \
-            '''<div class=\".runestone\" data-component=\"something]\">
+            '''<div class=\".runestone\" data-component=\"doenet\">
                     <div class="doenetml-applet">
                     <script type="text/doenetml">
             ''' + request.vars.code + '''
