@@ -14,6 +14,12 @@ window.addEventListener("message", (event) => {
   if (event.data.subject == "SPLICE.reportScoreAndState") {
     console.log(event.data.score);
     console.log(event.data.state);
+    let ev = {
+      event: "hparsons",
+      div_id: event.data.activityId,
+      act: JSON.stringify(event.data),
+    };
+    window.componentMap[event.data.activityId].logBookEvent(ev);
   } else if (event.data.subject == "SPLICE.sendEvent") {
     console.log(event.data.location);
     console.log(event.data.name);
@@ -50,7 +56,7 @@ export class Doenet extends RunestoneBase {
         allowSaveEvents: false,
         autoSubmit: false,
       },
-      activityId: "a thingy",
+      activityId: opts.orig.id,
       apiURLs: { postMessages: true },
     });
   }

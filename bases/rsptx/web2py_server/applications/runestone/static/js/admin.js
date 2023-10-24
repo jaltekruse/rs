@@ -2019,7 +2019,8 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
         } else {
             try {
                 let res = component_factory[componentKind](opt);
-                if (componentKind === "activecode") {
+                if (componentKind === "activecode"
+                    || componentKind == "doenet") {
                     if (moreOpts.multiGrader) {
                         window.componentMap[`${moreOpts.gradingContainer} ${res.divid}`] = res;
                     } else {
