@@ -1153,13 +1153,13 @@ def renameAssignment():
             return json.dumps("EXISTS")
         db(db.assignments.id == assignment_id).update(name=name)
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("ERROR")
     try:
         returndict = {name: assignment_id}
         return json.dumps(returndict)
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("ERROR")
 
 
@@ -1418,7 +1418,7 @@ def edit_question():
                 db.question_tags.insert(question_id=new_qid, tag_id=tag_id)
         return json.dumps("Success - Edited Question Saved")
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("An error occurred saving your question {}".format(str(ex)))
 
 
@@ -1611,7 +1611,7 @@ def createquestion():
 
         return json.dumps(returndict)
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("ERROR")
 
 
@@ -1754,7 +1754,7 @@ def releasegrades():
         assignment.update_record(released=released)
 
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return "ERROR"
 
     if released:
@@ -2073,7 +2073,7 @@ def get_assignment():
     try:
         assignment_data["due_date"] = assignment_row.duedate.strftime("%Y/%m/%d %H:%M")
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         assignment_data["due_date"] = None
     assignment_data["description"] = assignment_row.description
     assignment_data["visible"] = assignment_row.visible
@@ -2216,7 +2216,7 @@ def save_assignment():
         )
         return json.dumps({request.vars["name"]: assignment_id, "status": "success"})
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("ERROR")
 
 
@@ -2369,8 +2369,8 @@ def add__or_update_assignment_question():
             )
         )
     except Exception as ex:
-        logger.error(ex)
-        return json.dumps("Error")
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        return json.dumps("Error - " + ''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
 
 
 # As we move toward a question bank model for questions, this relaxes the
@@ -2468,7 +2468,7 @@ def delete_assignment_question():
         total = _set_assignment_max_points(assignment_id)
         return json.dumps({"total": total})
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps("Error")
 
 
@@ -2483,7 +2483,7 @@ def delete_question():
         ).delete()
         return json.dumps({"status": "Success"})
     except Exception as ex:
-        logger.error(ex)
+        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
         return json.dumps({"status": "Error"})
 
 
@@ -2781,7 +2781,7 @@ def enroll_students():
         validation_reader = csv.reader(validfile)
     except Exception as e:
         session.flash = "please choose a CSV file with student data"
-        logger.error(e)
+        logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
         return redirect(URL("admin", "admin"))
     messages = []
     line = 0
@@ -2820,7 +2820,7 @@ def enroll_students():
             else:
                 logger.error("Skipping empty records in CSV")
     except Exception as e:
-        logger.error(e)
+        logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
         db.rollback()
         counter = 0
         session.flash = "Error creating users: {}".format(e)
