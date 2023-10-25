@@ -14,6 +14,7 @@ window.addEventListener("message", (event) => {
   if (event.data.subject == "SPLICE.reportScoreAndState") {
     console.log(event.data.score);
     console.log(event.data.state);
+    event.data.course_name = eBookConfig.course;
     let ev = {
       event: "hparsons",
       div_id: event.data.activityId,

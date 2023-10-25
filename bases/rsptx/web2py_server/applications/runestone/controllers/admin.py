@@ -28,6 +28,7 @@ from rs_grading import _get_assignment, send_lti_grades
 from runestone import cmap
 import pandas as pd
 import altair as alt
+import traceback
 
 from rs_practice import _get_qualified_questions
 
@@ -44,6 +45,7 @@ AUTOGRADE_POSSIBLE_VALUES = dict(
     codelens=ALL_AUTOGRADE_OPTIONS,
     datafile=[],
     dragndrop=["manual", "all_or_nothing", "pct_correct", "interact"],
+    doenet=ALL_AUTOGRADE_OPTIONS,
     external=[],
     fillintheblank=ALL_AUTOGRADE_OPTIONS,
     khanex=ALL_AUTOGRADE_OPTIONS,
@@ -85,6 +87,7 @@ WHICH_TO_GRADE_POSSIBLE_VALUES = dict(
     clickablearea=ALL_WHICH_OPTIONS,
     codelens=ALL_WHICH_OPTIONS,
     datafile=[],
+    doenet=ALL_WHICH_OPTIONS,
     dragndrop=ALL_WHICH_OPTIONS,
     external=[],
     fillintheblank=ALL_WHICH_OPTIONS,
@@ -1455,8 +1458,14 @@ def gettemplate():
     template = request.args[0]
     returndict = {}
     base = ""
-
+    
+    logger.error("template passed in is: " + template)
+    logger.error(str(cmap))
+    logger.error(cmap.get(template, ""))
     returndict["template"] = base + cmap.get(template, "").__doc__
+
+    if template == "doenet":
+        returndict["template"] = "<!-- .. doenet:: doenet-1 -->\n1+1=<answer>2</answer>"
 
     base_course = (
         db(db.courses.id == auth.user.course_id)
@@ -1539,6 +1548,9 @@ def createquestion():
     try:
         newqID = db.questions.insert(
             base_course=base_course,
+            # TODO - this is the line that fails when a name isn't set in the request
+            # on the front-end, any error returned from this API shows the message
+            #  "Name is already in use. Please try a different name."
             name=request.vars["name"].strip(),
             chapter=request.vars["chapter"],
             subchapter=request.vars["subchapter"],
