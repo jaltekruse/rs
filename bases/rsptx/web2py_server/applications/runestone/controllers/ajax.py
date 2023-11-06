@@ -1474,11 +1474,28 @@ def preview_question():
         if True:
             logger.debug("preview question 3")
             #src = ixf.read()
+            # TODO - first thing tomorrow, extract the ID out of the code here and put it 
+            # in the html template below
+            #id =
+
+# from the JS frontend  
+# function find_name(lines) {
+#     var name = "";
+#     for (var i = 0; i < lines.length; i++) {
+#         if (lines[i] != "") {
+#             var line = lines[i];
+#             var match = line.split(/.. \w*:: /);
+#             name = match[1];
+#             break;
+#         }
+#     }
+#     return name;
+# } 
             htmlSrc = \
-            '''<div class=\".runestone\" data-component=\"doenet\">
+            '''<div class=\".runestone\" data-component=\"doenet\" id=\"\">
                     <div class="doenetml-applet">
                     <script type="text/doenetml">
-            ''' + request.vars.code + '''
+            ''' + dedent(json.loads(request.vars.code)) + '''
                     </script>
                 </div>
             </div>

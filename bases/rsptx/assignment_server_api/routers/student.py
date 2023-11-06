@@ -245,6 +245,11 @@ async def doAssignment(
     # If scores have not been released for the question or if there are no scores yet available, the scoring information will be recorded as empty strings
     qset = set()
     for q in questions:
+        rslogger.error(repr(q))
+        rslogger.error(str(q))
+        rslogger.error(str(q.Question))
+        rslogger.error(repr(q.Question))
+        rslogger.error(q.Question.htmlsrc)
         if q.Question.htmlsrc:
             # This replacement is to render images
             bts = q.Question.htmlsrc

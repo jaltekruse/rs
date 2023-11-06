@@ -133,7 +133,10 @@ async def log_book_event(
     rslogger.debug(useinfo_entry)
     idx = await create_useinfo_entry(useinfo_entry)
     response_dict = dict(timestamp=entry.timestamp)
+    rslogger.error(str(entry))
+    rslogger.error(str(entry.event))
     if entry.event in EVENT2TABLE:
+        rslogger.error("doenet in EVENT2TABLE")
         create_answer_table = True
         rcd = runestone_component_dict[EVENT2TABLE[entry.event]]
         if entry.event == "unittest":
@@ -153,8 +156,9 @@ async def log_book_event(
             if entry.act in ["start", "pause", "resume"]:
                 # We don't need these in the answer table but want the event to be timedExam.
                 create_answer_table = False
-        elif entry.event == "webwork" or entry.event == "hparsonsAnswer":
+        elif entry.event == "webwork" or entry.event == "hparsonsAnswer" or entry.event == "doenet":
             entry.answer = json.loads(useinfo_dict["answer"])
+            rslogger.error("set the answer")
 
         if create_answer_table:
             valid_table = rcd.validator.from_orm(entry)  # type: ignore

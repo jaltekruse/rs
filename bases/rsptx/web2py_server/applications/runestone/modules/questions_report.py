@@ -179,6 +179,12 @@ def questions_to_grades(
                 & (db.useinfo.div_id == db.mchoice_answers.div_id)
                 & (db.mchoice_answers.course_name == course_name)
             ),
+            db.doenet_answers.on(
+                (db.useinfo.timestamp == db.doenet_answers.timestamp)
+                & (db.useinfo.sid == db.doenet_answers.sid)
+                & (db.useinfo.div_id == db.doenet_answers.div_id)
+                & (db.doenet_answers.course_name == course_name)
+            ),
             db.parsons_answers.on(
                 (db.useinfo.timestamp == db.parsons_answers.timestamp)
                 & (db.useinfo.sid == db.parsons_answers.sid)
@@ -324,6 +330,8 @@ def _headers_query(
 
 def _row_decode(row, question_type):
     timestamp = row.useinfo.timestamp
+    logger.error("^^^^^^ ROW DECODE")
+    logger.error(str(row))
 
     # Use a specific table's timestamp field if at all possible; otherwise, use the useinfo timestamp.
     def ts_get(table):
@@ -398,6 +406,13 @@ def _row_decode(row, question_type):
             row.parsons_answers.answer,
             row.parsons_answers.correct,
             ts_get(row.parsons_answers),
+        )
+    elif question_type == "doenet":
+        logger.error("DO STUFF FOR DOENET QUESTION")
+        return (
+            row.doenet_answers.answer,
+            row.doenet_answers.correct,
+            ts_get(row.doenet_answers),
         )
     elif question_type == "shortanswer":
         # Prefer data from the shortanswer table if we have it; otherwise, we can use useinfo's act.
@@ -483,6 +498,8 @@ def query_assignment(
     # Build grades struct and populate with row/col headers.
     grades, query = _headers_query(course_name, query_questions, True)
 
+    logger.error("after  headers query")
+
     # **body data query**
     ## ------------------
     # Use this id to limit the query.
@@ -517,6 +534,9 @@ def query_assignment(
         db.parsons_answers.answer,
         db.parsons_answers.correct,
         db.parsons_answers.timestamp,
+        db.doenet_answers.answer,
+        db.doenet_answers.correct,
+        db.doenet_answers.timestamp,
         ##db.shortanswer_answers.answer,
         ##db.shortanswer_answers.timestamp,
         db.useinfo.timestamp,
@@ -552,6 +572,10 @@ def query_assignment(
                 (db.questions.question_type == "mchoice")
                 & (db.question_grades.answer_id == db.mchoice_answers.id)
             ),
+            db.doenet_answers.on(
+                (db.questions.question_type == "doenet")
+                & (db.question_grades.answer_id == db.doenet_answers.id)
+            ),
             db.parsons_answers.on(
                 (db.questions.question_type == "parsonsprob")
                 & (db.question_grades.answer_id == db.parsons_answers.id)
@@ -580,6 +604,9 @@ def query_assignment(
         ),
     ):
 
+        logger.error("!#@$!@$!@#$!@#$!@#$!@#$@!#$========================JASON")
+        logger.error(db._lastsql)
+        logger.error(str(row))
         # If a student answers no questions, then is autograded, then is removed from the course, the headings query doesn't contain this student. Add them in.
         username = row.question_grades.sid
         if username not in grades:
@@ -610,6 +637,8 @@ def query_assignment(
         ]
 
     _attempts_query(query, grades)
+    logger.error("!#@$!@$!@#$!@#$!@#$!@#$@!#$========================JASON")
+    logger.error(db._lastsql)
 
     return grades
 

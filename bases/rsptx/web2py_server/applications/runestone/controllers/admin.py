@@ -1464,8 +1464,8 @@ def gettemplate():
     logger.error(cmap.get(template, ""))
     returndict["template"] = base + cmap.get(template, "").__doc__
 
-    if template == "doenet":
-        returndict["template"] = "<!-- .. doenet:: doenet-1 -->\n1+1=<answer>2</answer>"
+    # if template == "doenet":
+        # returndict["template"] = "<!-- .. doenet:: doenet-1 -->\n1+1=<answer>2</answer>"
 
     base_course = (
         db(db.courses.id == auth.user.course_id)

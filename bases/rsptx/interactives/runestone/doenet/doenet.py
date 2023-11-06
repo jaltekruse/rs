@@ -94,8 +94,9 @@ def depart_hp_html(self, node):
 
 class DoenetDirective(RunestoneIdDirective):
     """
-    <!-- .. doenet:: doenet-1 -->
-    1+1=<answer>2</answer>
+    <!-- .. doenet:: doenet-1
+    -->
+    1+3000=<answer>4</answer>
     """
 
     required_arguments = 1

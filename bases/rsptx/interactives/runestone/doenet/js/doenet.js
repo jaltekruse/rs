@@ -15,12 +15,16 @@ window.addEventListener("message", (event) => {
     console.log(event.data.score);
     console.log(event.data.state);
     event.data.course_name = eBookConfig.course;
+    event.data.div_id = event.data.state.activityId;
     let ev = {
-      event: "hparsons",
-      div_id: event.data.activityId,
+      event: "doenet",
+      div_id: event.data.state.activityId,
+      percent: event.data.score,
+      correct: event.data.score  == 1 ? 'T' : 'F',
       act: JSON.stringify(event.data),
+      answer: JSON.stringify(event.data),
     };
-    window.componentMap[event.data.activityId].logBookEvent(ev);
+    window.componentMap[event.data.state.activityId].logBookEvent(ev);
   } else if (event.data.subject == "SPLICE.sendEvent") {
     console.log(event.data.location);
     console.log(event.data.name);
@@ -35,7 +39,10 @@ export class Doenet extends RunestoneBase {
     console.log(opts);
     console.log("Jason update oct 24th");
     this.doenetML = opts.doenetML;
+    console.log("opts.orig.id", opts.orig.id);
     var orig = $(opts.orig).find("div")[0];
+    console.log(orig);
+    console.log(orig.id);
     console.log(`${eBookConfig.new_server_prefix}/logger/bookevent`);
     // todo - think about how we pass around the doenetML
     //window.renderDoenetToContainer(orig, this.doenetML);
@@ -57,6 +64,7 @@ export class Doenet extends RunestoneBase {
         allowSaveEvents: false,
         autoSubmit: false,
       },
+      addBottomPadding: false,
       activityId: opts.orig.id,
       apiURLs: { postMessages: true },
     });
@@ -73,6 +81,44 @@ export class Doenet extends RunestoneBase {
 
   restoreAnswers() {}
 }
+
+//
+// Page Initialization
+//
+
+$(document).on("runestone:login-complete", function () {
+  //ACFactory.createScratchActivecode();
+  $("[data-component=doenet]").each(function () {
+      if ($(this).closest("[data-component=timedAssessment]").length == 0) {
+          // If this element exists within a timed component, don't render it here
+          try {
+              window.componentMap[this.id] = new Doenet({orig : this});
+              // ACFactory.createActiveCode(
+              //     this,
+              //     $(this).find("textarea").data("lang")
+              // );
+          } catch (err) {
+              console.log(`Error rendering Activecode Problem ${this.id}
+              Details: ${err}`);
+          }
+      }
+  });
+  // The componentMap can have any component, not all of them have a disableSaveLoad
+  // method or an enableSaveLoad method.  So we need to check for that before calling it.
+  // if (loggedout) {
+  //     for (let k in window.componentMap) {
+  //         if (window.componentMap[k].disableSaveLoad) {
+  //             window.componentMap[k].disableSaveLoad();
+  //         }
+  //     }
+  // } else {
+  //     for (let k in window.componentMap) {
+  //         if (window.componentMap[k].enableSaveLoad) {
+  //             window.componentMap[k].enableSaveLoad();
+  //         }
+  //     }
+  // }
+});
 
 if (typeof window.component_factory === "undefined") {
   window.component_factory = {};

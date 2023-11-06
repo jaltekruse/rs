@@ -1767,6 +1767,20 @@ function create_question(formdata) {
     if (formdata.createpoints.value == "") {
         formdata.createpoints.value = "1";
     }
+    var question = formdata.qcode.value;
+    var lines = question.split("\n");
+    var name = find_name(lines);
+
+    if (formdata.template.value == "doenet") {
+        formdata.qrawhtml.value = 
+        `<div class=\".runestone\" data-component=\"doenet\" id=\"${name}\">
+            <div class="doenetml-applet">
+                <script type="text/doenetml">
+                    ${question}
+                </script>
+            </div>
+        </div>`
+    }
     if (!formdata.qrawhtml.value) {
         alert("No HTML for this question, please generate it.");
         return;
@@ -1777,11 +1791,7 @@ function create_question(formdata) {
     var assignmentid = select.options[select.selectedIndex].value;
     var assignmentname = select.options[select.selectedIndex].text;
     var template = formdata.template.value;
-    var qcode = formdata.qcode.value;
-    var lines = qcode.split("\n");
     var htmlsrc = formdata.qrawhtml.value;
-    var name = find_name(lines);
-    var question = formdata.qcode.value;
     var difficulty = formdata.difficulty;
     for (var i = 0; i < difficulty.length; i++) {
         if (difficulty[i].checked == true) {
