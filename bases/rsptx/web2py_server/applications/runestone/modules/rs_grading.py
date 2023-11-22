@@ -433,7 +433,10 @@ def _scorable_doenet_answers(
         query = query & (db.doenet_answers.timestamp >= practice_start_time)
         if now:
             query = query & (db.doenet_answers.timestamp <= now)
-    return db(query).select(orderby=db.doenet_answers.timestamp)
+    logger.debug("{}".format(query))
+    ret = db(query).select(orderby=db.doenet_answers.timestamp) 
+    logger.debug("{}".format(db._lastsql))
+    return ret
 
 def _scorable_fitb_answers(
     course_name,
@@ -904,6 +907,9 @@ def _autograde_one_q(
         logger.debug("skipping; question_type = {}".format(question_type))
         return 0
 
+    logger.debug("results from scorable_answers_xxxx")
+    logger.debug("{}".format(repr(results)))
+    logger.debug("{}".format(len(results)))
     # use query results and the scoring function
     logger.debug("AGDB - end question type")
     if results:
