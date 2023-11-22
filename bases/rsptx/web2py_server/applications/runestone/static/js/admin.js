@@ -1743,6 +1743,16 @@ function display_write() {
 
     var hiddenwrite = document.getElementById("hiddenwrite");
     hiddenwrite.style.visibility = "visible";
+
+    var hiddenDoenetEditor = document.getElementById("doenet-question-editor");
+    var hiddenRunestoneEditor = document.getElementById("runestone-question-editor");
+    if (questiontype === "doenet") {
+        hiddenDoenetEditor.style.display = "block";
+        hiddenRunestoneEditor.style.display = "none";
+    } else {
+        hiddenRunestoneEditor.style.display = "block";
+        hiddenDoenetEditor.style.display = "none";
+    }
 }
 
 function find_name(lines) {
@@ -1759,7 +1769,7 @@ function find_name(lines) {
 }
 
 // Called when the "Done" button of the "Write" dialog is clicked.
-function create_question(formdata) {
+async function create_question(formdata) {
     if (formdata.qchapter.value == "Chapter") {
         alert("Please select a chapter for this question");
         return;
@@ -1767,19 +1777,27 @@ function create_question(formdata) {
     if (formdata.createpoints.value == "") {
         formdata.createpoints.value = "1";
     }
-    var question = formdata.qcode.value;
+    var question;
+    if (formdata.template.value == "doenet") {
+        question = (await returnAllStateVariables1())['/_codeeditor1'].stateValues.text;
+        question = "<!-- .. doenet:: doenet-" + Math.floor(Math.random() * 10000000) + "\n-->" + question;
+
+        formdata.qrawhtml.value = 
+            `<div class=\".runestone\" data-component=\"doenet\" id=\"${name}\">
+                <div class="doenetml-applet">
+                    <script type="text/doenetml">
+                        ${question}
+                    </script>
+                </div>
+            </div>`
+    } else {
+        question = formdata.qcode.value;
+    }
+        
     var lines = question.split("\n");
     var name = find_name(lines);
 
     if (formdata.template.value == "doenet") {
-        formdata.qrawhtml.value = 
-        `<div class=\".runestone\" data-component=\"doenet\" id=\"${name}\">
-            <div class="doenetml-applet">
-                <script type="text/doenetml">
-                    ${question}
-                </script>
-            </div>
-        </div>`
     }
     if (!formdata.qrawhtml.value) {
         alert("No HTML for this question, please generate it.");
