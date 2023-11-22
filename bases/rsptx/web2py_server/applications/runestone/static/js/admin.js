@@ -1782,7 +1782,7 @@ async function create_question(formdata) {
         question = (await returnAllStateVariables1())['/_codeeditor1'].stateValues.text;
         question = "<!-- .. doenet:: doenet-" + Math.floor(Math.random() * 10000000) + "\n-->" + question;
 
-        formdata.qrawhtml.value = 
+        formdata.qrawhtml.value =
             `<div class=\".runestone\" data-component=\"doenet\" id=\"${name}\">
                 <div class="doenetml-applet">
                     <script type="text/doenetml">
@@ -1793,7 +1793,7 @@ async function create_question(formdata) {
     } else {
         question = formdata.qcode.value;
     }
-        
+
     var lines = question.split("\n");
     var name = find_name(lines);
 
@@ -2047,6 +2047,7 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
         } else {
             try {
                 let res = component_factory[componentKind](opt);
+                res.multiGrader = moreOpts.multiGrader;
                 if (componentKind === "activecode"
                     || componentKind == "doenet") {
                     if (moreOpts.multiGrader) {
@@ -2130,7 +2131,7 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
         }
         // $(`#${whereDiv}`).css("background-color", "white");
     }
-    
+
 
     if (componentKind == "doenet") {
         //window.renderDoenetToContainer(document.querySelector(".doenetml-applet"));

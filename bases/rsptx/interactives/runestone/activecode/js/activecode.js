@@ -1314,7 +1314,10 @@ Yet another is that there is an internal error.  The internal error message is: 
                         .length == 0
                 ) {
                     let urResults = document.getElementById(urDivid);
-                    this.outerDiv.appendChild(urResults);
+                    // why do we do this?  This doesn't seem to matter for grading...
+                    if (urResults) {
+                        this.outerDiv.appendChild(urResults);
+                    }
                 }
             }
         }
@@ -1365,7 +1368,14 @@ Yet another is that there is an internal error.  The internal error message is: 
         var prog = await this.buildProg(true);
         this.saveCode = "True";
         $(this.output).text("");
-
+        if (this.unit_results_divid) {
+            let urdiv = document.getElementById(
+                this.unit_results_divid + "_unit_results"
+            );
+            if (urdiv) {
+                urdiv.innerHTML = "";
+            }
+        }
         while ($(`#${this.divid}_errinfo`).length > 0) {
             $(`#${this.divid}_errinfo`).remove();
         }

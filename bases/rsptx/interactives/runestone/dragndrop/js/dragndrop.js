@@ -208,7 +208,11 @@ export default class DragNDrop extends RunestoneBase {
                 );
             }
         }
-        this.randomizeIndexArray();
+        if (this.random) {
+            this.randomizeIndexArray(); // shuffle index again
+        } else {
+            this.createIndexArray(); // reset default index
+        }
         for (let i = 0; i < this.dragPairArray.length; i++) {
             if (this.hasStoredDropzones) {
                 if (this.pregnantIndexArray[this.indexArray[i]] !== "-1") {
@@ -408,7 +412,7 @@ export default class DragNDrop extends RunestoneBase {
             event: "dragNdrop",
             act: answer,
             answer: answer,
-            min_height: this.minheight,
+            min_height: Math.round(this.minheight),
             div_id: this.divid,
             correct: this.correct,
             correctNum: this.correctNum,
@@ -497,7 +501,7 @@ export default class DragNDrop extends RunestoneBase {
                         event: "dragNdrop",
                         act: answer,
                         answer: answer,
-                        min_height: this.minheight,
+                        min_height: Math.round(this.minheight),
                         div_id: this.divid,
                         correct: storedObj.correct,
                     });

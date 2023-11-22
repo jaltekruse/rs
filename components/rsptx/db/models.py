@@ -32,7 +32,7 @@ from typing import Dict, Type
 
 # Third-party imports
 # -------------------
-from pydantic import validator
+from pydantic import field_validator
 from sqlalchemy import (
     Column,
     ForeignKey,
@@ -93,6 +93,7 @@ class Web2PyBoolean(types.TypeDecorator):
 
 # Schema Definition
 # =================
+
 
 # Provide a container to store information about each type of Runestone Component. While a namedtuple would be better, this can't be used since the fields aren't modifiable after creation; see the comment on `init_graders <init_graders>`.
 class RunestoneComponentDict:
@@ -235,7 +236,7 @@ class DragndropAnswers(Base, CorrectAnswerMixin):
     __tablename__ = "dragndrop_answers"
     # See answer_. TODO: what is the format?
     answer = Column(String(512), nullable=False)
-    min_height = Column(String(512), nullable=False)
+    min_height = Column(Integer, nullable=False)
     __table_args__ = (Index("idx_div_sid_course_dd", "sid", "div_id", "course_name"),)
 
 
@@ -419,7 +420,8 @@ BaseAuthUserValidator = sqlalchemy_to_pydantic(AuthUser)
 
 
 class AuthUserValidator(BaseAuthUserValidator):  # type: ignore
-    @validator("username")
+    @field_validator("username")
+    @classmethod
     def username_clear_of_css_characters(cls, v):
         if re.search(r"""[!"#$%&'()*+,./@:;<=>?[\]^`{|}~ ]""", v):
             pass
@@ -656,6 +658,7 @@ class Grade(Base, IdMixin):
 
 GradeValidator = sqlalchemy_to_pydantic(Grade)
 
+
 # Book Structure Tables
 # ---------------------
 class Chapter(Base, IdMixin):
@@ -844,6 +847,7 @@ class Library(Base, IdMixin):
     main_page = Column(String(512), default="index.html")
     last_build = Column(DateTime)
     github_url = Column(String(255))
+    social_url = Column(String(255))  # link to group for instructors
 
 
 LibraryValidator = sqlalchemy_to_pydantic(Library)

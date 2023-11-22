@@ -55,7 +55,6 @@ async def index(request: Request, user=Depends(auth_manager)):
     :param request: _description_
     :type request: Request
     """
-    sid = user.username
     course_name = user.course_name
     course = await fetch_course(course_name)
     instructors = await fetch_course_instructors(course_name)
@@ -95,6 +94,7 @@ async def index(request: Request, user=Depends(auth_manager)):
             "student_page": True,
             "course_list": course_list,
             "is_instructor": user_is_instructor,
+            "has_discussion_group": any([book.social_url for book in books]),
         },
     )
 

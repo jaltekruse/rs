@@ -1,10 +1,8 @@
 from starlette_wtf import StarletteForm
 from wtforms import (
-    Form,
     BooleanField,
     StringField,
     validators,
-    DateTimeField,
     DateField,
     HiddenField,
     SelectField,
@@ -32,6 +30,7 @@ class LibraryForm(StarletteForm):
     is_visible = BooleanField("Visible to Everyone in Library")
     github_url = StringField("Github URL")
     main_page = StringField("Main page")
+    social_url = StringField("Social URL")
     # last_build = DateTimeField("Last Build") - no reason to update this manually
 
 

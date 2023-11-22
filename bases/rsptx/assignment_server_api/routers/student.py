@@ -110,7 +110,7 @@ class UpdateStatusRequest(BaseModel):
     """
 
     assignment_id: int
-    new_state: Optional[str]
+    new_state: Optional[str] = None
 
 
 @router.post("/update_submit")
@@ -257,9 +257,9 @@ async def doAssignment(
                 'src="../_static/', 'src="' + get_course_url(course, "_static/")
             )
             htmlsrc = htmlsrc.replace("../_images", get_course_url(course, "_images"))
-            htmlsrc = htmlsrc.replace(
-                "generated/webwork", get_course_url(course, "generated/webwork")
-            )
+            # htmlsrc = htmlsrc.replace(
+            #     "generated/webwork", get_course_url(course, "generated/webwork")
+            # )
         else:
             htmlsrc = None
 
@@ -347,7 +347,10 @@ async def doAssignment(
     if RS_info:
         rslogger.debug(f"RS_info Cookie {RS_info}")
         # Note that to get to the value of the cookie you must use ``.value``
-        parsed_js = json.loads(RS_info)
+        try:
+            parsed_js = json.loads(RS_info)
+        except Exception as e:
+            parsed_js = {}
     else:
         parsed_js = {}
     parsed_js["readings"] = readings_names

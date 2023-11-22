@@ -12,12 +12,10 @@
 #
 # Standard library
 # ----------------
-import pdb
 import datetime
 import os
 import re
 import subprocess
-import sys
 from pathlib import Path
 
 # Third Party
@@ -25,8 +23,6 @@ from pathlib import Path
 import click
 import lxml.etree as ET
 from lxml import ElementInclude
-
-from sqlalchemy.exc import IntegrityError
 
 # import xml.etree.ElementTree as ET
 
@@ -79,7 +75,7 @@ def _build_runestone_book(config, course, click=click):
     # process and **know** we are making a build for a runestone server. In that
     # case we need to make sure that the dynamic_pages flag is set to True in
     # pavement.py
-    if hasattr(click, "worker") and paver_vars["dynamic_pages"] != True:
+    if hasattr(click, "worker") and paver_vars["dynamic_pages"] is not True:
         click.echo("dynamic_pages must be set to True in pavement.py")
         return False
     if paver_vars["project_name"] != course:
@@ -224,6 +220,9 @@ def check_project_ptx(click=click):
         return False
     else:
         dest = targ.find("./output-dir")
+        if dest is None:
+            click.echo("No output-dir specified in runestone target")
+            return False
         if "published" not in dest.text:
             click.echo("destination for build must be in published/<document-id>")
             return False
@@ -297,8 +296,8 @@ def update_library(
         else:
             description = ""
         # update course key_words if found in book's conf.py
-        if "key_words" in config_vars:
-            key_words = config_vars["key_words"]
+        # if "key_words" in config_vars:
+        #     key_words = config_vars["key_words"]
 
         if "shelf_section" in config_vars:
             shelf = config_vars["shelf_section"]
@@ -310,18 +309,17 @@ def update_library(
     Session = sessionmaker()
     eng.connect()
     Session.configure(bind=eng)
-    sess = Session()
 
     try:
         res = eng.execute(f"select * from library where basecourse = '{course}'")
-    except:
+    except Exception:
         click.echo("Missing library table?  You may need to run an alembic migration.")
         return False
     # using the Model rather than raw sql ensures that everything is properly escaped
     build_time = datetime.datetime.utcnow()
     click.echo(f"BUILD time is {build_time}")
     if res.rowcount == 0:
-        l = LibraryValidator(
+        new_lib = LibraryValidator(
             title=title,
             subtitle=subtitle,
             description=description,
@@ -333,7 +331,7 @@ def update_library(
             for_classes="F",
             is_visible="T",
         )
-        new_book = Library(**l.dict())
+        new_book = Library(**new_lib.dict())
         with Session.begin() as s:
             s.add(new_book)
     else:
@@ -408,7 +406,7 @@ def populate_static(config, mpath: Path, course: str, click=click):
             try:
                 if "lunr-pretext" not in f:
                     os.remove(sdir / f)
-            except:
+            except Exception:
                 click.echo(f"ERROR - could not delete {f}")
         # call wget non-verbose, recursive, no parents, no hostname, no directoy copy files to sdir
         # trailing slash is important or otherwise you will end up with everything below runestone
@@ -471,6 +469,8 @@ def manifest_data_to_db(course_name, manifest_path):
     )
 
     rslogger.info("Populating the database with Chapter information")
+    ext_img_patt = re.compile(r"""src="external""")
+    gen_img_patt = re.compile(r"""src="generated""")
 
     tree = ET.parse(manifest_path)
     root = tree.getroot()
@@ -567,10 +567,6 @@ def manifest_data_to_db(course_name, manifest_path):
                 rslogger.debug(f"found label= {qlabel}")
                 rslogger.debug("looking for data-component")
                 # pdb.set_trace()
-                if "optional" in question.attrib:
-                    optional = "T"
-                else:
-                    optional = "F"
 
                 el = question.find(".//*[@data-component]")
                 old_ww_id = None
@@ -601,10 +597,15 @@ def manifest_data_to_db(course_name, manifest_path):
                         idchild = id_el.attrib["id"]
                     # translate qtype to question_type
                     qtype = QT_MAP.get(qtype, qtype)
-                except:
+                except Exception:
                     if el is not None:
                         qtype = "webwork"
                         dbtext = ET.tostring(el).decode("utf8")
+
+                if "optional" in question.attrib or qtype == "datafile":
+                    optional = "T"
+                else:
+                    optional = "F"
                 practice = "F"
                 if qtype == "webwork":
                     practice = "T"
@@ -612,13 +613,20 @@ def manifest_data_to_db(course_name, manifest_path):
                     practice = "T"
                 autograde = ""
                 if "====" in dbtext:
-                    extraCode = dbtext.partition('====')[2] #text after ====
-                    #keywords for sql, py, cpp, java respectively
-                    for utKeyword in ['assert', 'unittest', 'TEST_CASE', 'junit']:
+                    extraCode = dbtext.partition("====")[2]  # text after ====
+                    # keywords for sql, py, cpp, java respectively
+                    for utKeyword in ["assert", "unittest", "TEST_CASE", "junit"]:
                         if utKeyword in extraCode:
                             autograde = "unittest"
                             break
                 # chapter and subchapter are elements
+                # fix image urls in dbtext to be relative to the book
+                dbtext = ext_img_patt.sub(
+                    f"""src="/ns/books/published/{course_name}/external""", dbtext
+                )
+                dbtext = gen_img_patt.sub(
+                    f"""src="/ns/books/published/{course_name}/generated""", dbtext
+                )
                 sbc = subchapter.find("./id").text
                 cpt = chapter.find("./id").text
                 valudict = dict(
