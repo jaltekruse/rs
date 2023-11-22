@@ -1682,6 +1682,7 @@ def htmlsrc():
 
     result = {"htmlsrc": htmlsrc}
     logger.debug("htmlsrc = {htmlsrc}")
+    # Marker Jason
     if "data-attachment" in htmlsrc:
         # get the URL for the attachment, but we need the course, the user and the divid
         session = boto3.session.Session()

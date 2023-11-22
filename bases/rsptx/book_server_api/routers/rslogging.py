@@ -530,6 +530,7 @@ async def getlastpage(request: Request, course: str):
 # The files should be stored in their bucket -- stored in Environment
 # using coursename/student_id/div_id_filename.ext
 # this will allow for easy recovery.
+# Marker Jason - currently used for student file uploads
 @router.post("/upload/{div_id:str}")
 async def create_upload_file(request: Request, file: UploadFile, div_id: str):
 
