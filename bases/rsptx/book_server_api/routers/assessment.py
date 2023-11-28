@@ -23,6 +23,8 @@ from typing import Optional, Dict, Any
 # -------------------
 from bleach import clean
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
 # Local application imports
@@ -67,6 +69,70 @@ router = APIRouter(
     tags=["assessment"],
 )
 
+@router.get("/getDoenetState")
+async def getdoenetstate(request: Request, div_id: str, 
+                         course_name: str, event: str,
+                         # sid: Optional[str],
+                         user=Depends(auth_manager)
+):
+    rslogger.debug(f"getting doenet state")
+    request_data = AssessmentRequest(course=course_name, div_id=div_id, event=event)
+    rslogger.debug(f"getting doenet state 1")
+    # if the user is not logged in an HTTP 401 will be returned.
+    # Otherwise if the user is an instructor then use the provided
+    # sid (it could be any student in the class). If none is provided then
+    # use the user objects username
+    sid = user.username
+    if await is_instructor(request):
+        if request_data.sid:
+            sid = request_data.sid
+            rslogger.debug(f"getting doenet state 1.1")
+    else:
+        rslogger.debug(f"getting doenet state 1.2")
+        if request_data.sid:
+            # someone is attempting to spoof the api
+            rslogger.debug(f"getting doenet state 1.2.1")
+            return make_json_response(
+                status=status.HTTP_401_UNAUTHORIZED, detail="not an instructor"
+            )
+    request_data.sid = sid
+
+
+    rslogger.debug(f"getting doenet state 2")
+    row = await fetch_last_answer_table_entry(request_data)
+    rslogger.debug(f"getting doenet state 3")
+    # mypy complains that ``row.id`` doesn't exist (true, but the return type wasn't exact and this does exist).
+    if not row or row.id is None:  # type: ignore
+        rslogger.debug(f"getting doenet state 3.5")
+        return make_json_response(detail="no data")
+    rslogger.debug(f"getting doenet state 4")
+    ret = row.dict()
+    rslogger.debug(f"getting doenet state 5")
+    rslogger.debug(f"row is {ret}")
+    if "timestamp" in ret:
+        ret["timestamp"] = (
+            ret["timestamp"].replace(tzinfo=datetime.timezone.utc).isoformat()
+        )
+        rslogger.debug(f"timestamp is {ret['timestamp']}")
+
+    # Do server-side grading if needed, which restores the answer and feedback.
+    if feedback := await is_server_feedback(request_data.div_id, request_data.course):
+        rcd = runestone_component_dict[EVENT2TABLE[request_data.event]]
+        # The grader should also be defined if there's feedback.
+        assert rcd.grader
+        # Use the grader to add server-side feedback to the returned dict.
+        ret.update(await rcd.grader(row, feedback))
+
+    # get grade and instructor feedback if Any
+    grades = await fetch_question_grade(sid, request_data.course, request_data.div_id)
+    if grades:
+        ret["comment"] = grades.comment
+        ret["score"] = grades.score
+    rslogger.debug(f"Returning {ret}")
+    # return make_json_response(detail=ret)
+    return JSONResponse(
+        status_code=status, content=jsonable_encoder(ret["answer"]["state"])
+    )
 
 # getAssessResults
 # ----------------

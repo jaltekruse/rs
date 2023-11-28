@@ -46,6 +46,12 @@ export class Doenet extends RunestoneBase {
     console.log(`${eBookConfig.new_server_prefix}/logger/bookevent`);
     // todo - think about how we pass around the doenetML
     //window.renderDoenetToContainer(orig, this.doenetML);
+
+    var loadPageStateUrl = `/ns/assessment/getDoenetState?div_id=${opts.orig.id}&course_name=${eBookConfig.course}&event=doenet`
+            // data.div_id = this.divid;
+            // data.course = eBookConfig.course;
+            // data.event = eventInfo;
+
     window.renderDoenetToContainer(orig, this.doenetML, {
       flags: {
         // showCorrectness,
@@ -66,8 +72,13 @@ export class Doenet extends RunestoneBase {
       },
       addBottomPadding: false,
       activityId: opts.orig.id,
-      apiURLs: { postMessages: true },
+      apiURLs: { 
+        postMessages: true,
+        loadPageState: loadPageStateUrl
+      },
     });
+
+    //this.checkServer("hparsonsAnswer", true);
   }
 
   async logCurrentAnswer(sid) {}
@@ -79,7 +90,9 @@ export class Doenet extends RunestoneBase {
   checkLocalStorage() {}
   setLocalStorage() {}
 
-  restoreAnswers() {}
+  restoreAnswers(data) {
+    console.log("TODO IMPLEMENT loading data from doenet activity", data);
+  }
 }
 
 //

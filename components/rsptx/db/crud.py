@@ -1714,6 +1714,8 @@ async def create_traceback(exc: Exception, request: Request, host: str):
             dl.append(dict(name=name, local_vars=local_vars))
             curr = curr.tb_next
         rslogger.debug(f"{dl[-2:]=}")
+        rslogger.error(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
+
 
         new_entry = TraceBack(
             traceback=tbtext + str(dl[-2:]),

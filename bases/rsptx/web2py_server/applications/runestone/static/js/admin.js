@@ -1780,10 +1780,11 @@ async function create_question(formdata) {
     var question;
     if (formdata.template.value == "doenet") {
         question = (await returnAllStateVariables1())['/_codeeditor1'].stateValues.text;
-        question = "<!-- .. doenet:: doenet-" + Math.floor(Math.random() * 10000000) + "\n-->" + question;
+        var questionId = "doenet-" + Math.floor(Math.random() * 10000000);
+        question = "<!-- .. doenet:: " + questionId + "\n-->" + question;
 
         formdata.qrawhtml.value =
-            `<div class=\".runestone\" data-component=\"doenet\" id=\"${name}\">
+            `<div class=\".runestone\" data-component=\"doenet\" id=\"${questionId}\">
                 <div class="doenetml-applet">
                     <script type="text/doenetml">
                         ${question}
