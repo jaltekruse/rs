@@ -1726,7 +1726,7 @@ async def create_traceback(exc: Exception, request: Request, host: str):
             hash=hashlib.md5(tbtext.encode("utf8")).hexdigest(),
             hostname=host,
         )
-        session.add(new_entry)
+        # session.add(new_entry)
 
 
 async def fetch_library_books():

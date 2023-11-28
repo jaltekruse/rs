@@ -128,10 +128,14 @@ async def getdoenetstate(request: Request, div_id: str,
     if grades:
         ret["comment"] = grades.comment
         ret["score"] = grades.score
+
+    real_ret = ret["answer"]["state"]
+    real_ret["success"] = True
+    real_ret["loadedState"] = True
     rslogger.debug(f"Returning {ret}")
     # return make_json_response(detail=ret)
     return JSONResponse(
-        status_code=status, content=jsonable_encoder(ret["answer"]["state"])
+        status_code=200, content=jsonable_encoder(real_ret)
     )
 
 # getAssessResults
