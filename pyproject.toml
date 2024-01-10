@@ -99,6 +99,7 @@ jupyterlite-sphinx = "^0.9.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "~= 23.0"
+#TODO - do we need to update this as well?
 CodeChat = "^1.9.3"
 contextlib2 = "^0.6.0"
 coverage = "^6.0.0"
