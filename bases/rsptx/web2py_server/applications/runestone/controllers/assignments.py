@@ -1448,7 +1448,6 @@ def _error_formatter(e):
     requires_login=True,
 )
 def grades_report():
-    logger.error("FIRST !#@$!@$!@#$!@#$!@#$!@#$@!#$========================JASON")
     try:
         if request.vars.report_type == "assignment":
             grades = query_assignment(

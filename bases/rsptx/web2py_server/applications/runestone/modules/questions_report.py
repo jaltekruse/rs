@@ -330,8 +330,6 @@ def _headers_query(
 
 def _row_decode(row, question_type):
     timestamp = row.useinfo.timestamp
-    logger.error("^^^^^^ ROW DECODE")
-    logger.error(str(row))
 
     # Use a specific table's timestamp field if at all possible; otherwise, use the useinfo timestamp.
     def ts_get(table):
@@ -408,7 +406,6 @@ def _row_decode(row, question_type):
             ts_get(row.parsons_answers),
         )
     elif question_type == "doenet":
-        logger.error("DO STUFF FOR DOENET QUESTION")
         return (
             row.doenet_answers.answer,
             row.doenet_answers.correct,
@@ -497,8 +494,6 @@ def query_assignment(
 
     # Build grades struct and populate with row/col headers.
     grades, query = _headers_query(course_name, query_questions, True)
-
-    logger.error("after  headers query")
 
     # **body data query**
     ## ------------------
@@ -604,9 +599,6 @@ def query_assignment(
         ),
     ):
 
-        logger.error("!#@$!@$!@#$!@#$!@#$!@#$@!#$========================JASON")
-        logger.error(db._lastsql)
-        logger.error(str(row))
         # If a student answers no questions, then is autograded, then is removed from the course, the headings query doesn't contain this student. Add them in.
         username = row.question_grades.sid
         if username not in grades:
@@ -637,8 +629,6 @@ def query_assignment(
         ]
 
     _attempts_query(query, grades)
-    logger.error("!#@$!@$!@#$!@#$!@#$!@#$@!#$========================JASON")
-    logger.error(db._lastsql)
 
     return grades
 

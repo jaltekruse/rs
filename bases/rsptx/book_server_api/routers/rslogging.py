@@ -129,10 +129,7 @@ async def log_book_event(
     rslogger.debug(useinfo_entry)
     idx = await create_useinfo_entry(useinfo_entry)
     response_dict = dict(timestamp=entry.timestamp)
-    rslogger.error(str(entry))
-    rslogger.error(str(entry.event))
     if entry.event in EVENT2TABLE:
-        rslogger.error("doenet in EVENT2TABLE")
         create_answer_table = True
         rcd = runestone_component_dict[EVENT2TABLE[entry.event]]
         if entry.event == "unittest":
@@ -154,7 +151,6 @@ async def log_book_event(
                 create_answer_table = False
         elif entry.event == "webwork" or entry.event == "hparsonsAnswer" or entry.event == "doenet":
             entry.answer = json.loads(useinfo_dict["answer"])
-            rslogger.error("set the answer")
 
         if create_answer_table:
             valid_table = rcd.validator.from_orm(entry)  # type: ignore
@@ -529,7 +525,6 @@ async def getlastpage(request: Request, course: str):
 # The files should be stored in their bucket -- stored in Environment
 # using coursename/student_id/div_id_filename.ext
 # this will allow for easy recovery.
-# Marker Jason - currently used for student file uploads
 @router.post("/upload/{div_id:str}")
 async def create_upload_file(request: Request, file: UploadFile, div_id: str):
     if not request.state.user:

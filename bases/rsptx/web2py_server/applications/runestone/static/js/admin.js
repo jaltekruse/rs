@@ -2009,12 +2009,7 @@ async function renderRunestoneComponent(componentSrc, whereDiv, moreOpts) {
     if (componentSrc.indexOf("doenet") >= 0) {
         componentKind = "doenet";
     }
-
-    console.log(componentKind);
     // Import all the js needed for this component before rendering
-    // if (componentKind != "doenet") {
-    //     await runestoneComponents.runestone_import(componentKind);
-    // }
     await runestoneComponents.runestone_import(componentKind);
     let opt = {};
     opt.orig = jQuery(`#${whereDiv} [data-component]`)[0];

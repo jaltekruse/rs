@@ -86,7 +86,6 @@ def add_exception_handlers(app):
         this catches those and returns a 422
         """
         rslogger.error(exc)
-        rslogger.error(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
 
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -101,7 +100,6 @@ def add_exception_handlers(app):
         """
         rslogger.error("UNHANDLED ERROR")
         rslogger.error(exc)
-        rslogger.error(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
         date = datetime.datetime.utcnow().strftime("%Y_%m_%d-%I.%M.%S_%p")
         with open(f"{settings.error_path}/{date}_traceback.txt", "w") as f:
             traceback.print_tb(exc.__traceback__, file=f)

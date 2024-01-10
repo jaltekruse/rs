@@ -28,7 +28,6 @@ from rs_grading import _get_assignment, send_lti_grades
 from runestone import cmap
 import pandas as pd
 import altair as alt
-import traceback
 
 from rs_practice import _get_qualified_questions
 
@@ -1153,13 +1152,13 @@ def renameAssignment():
             return json.dumps("EXISTS")
         db(db.assignments.id == assignment_id).update(name=name)
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("ERROR")
     try:
         returndict = {name: assignment_id}
         return json.dumps(returndict)
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("ERROR")
 
 
@@ -1418,7 +1417,7 @@ def edit_question():
                 db.question_tags.insert(question_id=new_qid, tag_id=tag_id)
         return json.dumps("Success - Edited Question Saved")
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("An error occurred saving your question {}".format(str(ex)))
 
 
@@ -1458,14 +1457,8 @@ def gettemplate():
     template = request.args[0]
     returndict = {}
     base = ""
-    
-    logger.error("template passed in is: " + template)
-    logger.error(str(cmap))
-    logger.error(cmap.get(template, ""))
-    returndict["template"] = base + cmap.get(template, "").__doc__
 
-    # if template == "doenet":
-        # returndict["template"] = "<!-- .. doenet:: doenet-1 -->\n1+1=<answer>2</answer>"
+    returndict["template"] = base + cmap.get(template, "").__doc__
 
     base_course = (
         db(db.courses.id == auth.user.course_id)
@@ -1548,9 +1541,6 @@ def createquestion():
     try:
         newqID = db.questions.insert(
             base_course=base_course,
-            # TODO - this is the line that fails when a name isn't set in the request
-            # on the front-end, any error returned from this API shows the message
-            #  "Name is already in use. Please try a different name."
             name=request.vars["name"].strip(),
             chapter=request.vars["chapter"],
             subchapter=request.vars["subchapter"],
@@ -1611,7 +1601,7 @@ def createquestion():
 
         return json.dumps(returndict)
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("ERROR")
 
 
@@ -1682,7 +1672,6 @@ def htmlsrc():
 
     result = {"htmlsrc": htmlsrc}
     logger.debug("htmlsrc = {htmlsrc}")
-    # Marker Jason
     if "data-attachment" in htmlsrc:
         # get the URL for the attachment, but we need the course, the user and the divid
         session = boto3.session.Session()
@@ -1754,7 +1743,7 @@ def releasegrades():
         assignment.update_record(released=released)
 
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return "ERROR"
 
     if released:
@@ -2077,7 +2066,7 @@ def get_assignment():
     try:
         assignment_data["due_date"] = assignment_row.duedate.strftime("%Y/%m/%d %H:%M")
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         assignment_data["due_date"] = None
     assignment_data["description"] = assignment_row.description
     assignment_data["visible"] = assignment_row.visible
@@ -2223,7 +2212,7 @@ def save_assignment():
         )
         return json.dumps({request.vars["name"]: assignment_id, "status": "success"})
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("ERROR")
 
 
@@ -2380,8 +2369,8 @@ def add__or_update_assignment_question():
             )
         )
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
-        return json.dumps("Error - " + ''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
+        return json.dumps("Error")
 
 
 # As we move toward a question bank model for questions, this relaxes the
@@ -2479,7 +2468,7 @@ def delete_assignment_question():
         total = _set_assignment_max_points(assignment_id)
         return json.dumps({"total": total})
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps("Error")
 
 
@@ -2494,7 +2483,7 @@ def delete_question():
         ).delete()
         return json.dumps({"status": "Success"})
     except Exception as ex:
-        logger.error(''.join(traceback.format_exception(type(ex), ex, ex.__traceback__)))
+        logger.error(ex)
         return json.dumps({"status": "Error"})
 
 
@@ -2792,7 +2781,7 @@ def enroll_students():
         validation_reader = csv.reader(validfile)
     except Exception as e:
         session.flash = "please choose a CSV file with student data"
-        logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
+        logger.error(e)
         return redirect(URL("admin", "admin"))
     messages = []
     line = 0
@@ -2831,7 +2820,7 @@ def enroll_students():
             else:
                 logger.error("Skipping empty records in CSV")
     except Exception as e:
-        logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
+        logger.error(e)
         db.rollback()
         counter = 0
         session.flash = "Error creating users: {}".format(e)

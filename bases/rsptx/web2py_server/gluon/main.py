@@ -23,7 +23,6 @@ import signal
 import socket
 import random
 import string
-import traceback
 
 from gluon._compat import Cookie, urllib_quote
 # from thread import allocate_lock
@@ -497,8 +496,6 @@ def wsgibase(environ, responder):
 
             except RestrictedError as e:
 
-                logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
-
                 if request.body:
                     request.body.close()
 
@@ -523,9 +520,7 @@ def wsgibase(environ, responder):
                          dict(ticket=ticket),
                          web2py_error='ticket %s' % ticket)
 
-        except BaseException as e:
-
-            logger.error(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
+        except:
 
             if request.body:
                 request.body.close()
