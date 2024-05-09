@@ -8,9 +8,11 @@ export default defineConfig(() => {
         },
         server: {
             proxy: {
-                "/ns": "http://localhost",
+                //"/ns": "http://localhost",
+                //"/assignment": "http://localhost",
 
-                "/assignment": "http://localhost",
+                "/ns": "http://localhost:8080",
+                "/assignment": "http://localhost:8080",
             },
         },
         // base: "/assignment/react/", // this changes the base for dev as well as prod :-(
