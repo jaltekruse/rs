@@ -92,7 +92,7 @@ export function ExerciseEditor(props) {
                                 className="field"
                                 onChange={(e) => dispatch(setTags(e.target.value))} />
                         </div>
-                        <div>
+                        <div className="field col">
                             <label htmlFor="difficulty">Difficulty</label>
                             <InputNumber
                                 id="difficulty"

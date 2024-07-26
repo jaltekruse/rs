@@ -6,6 +6,7 @@ import { setQuestionType } from "../state/interactive/interactiveSlice";
 import ActiveCodeCreator from "./activeCode";
 import { MultipleChoiceCreator } from "./multipleChoice";
 import { ShortAnswerCreator } from "./shortAnswer";
+import { DoenetMLCreator } from "./doenetML";
 import { ExerciseEditor } from "./exerciseEditor";
 import PropTypes from 'prop-types';
 /**
@@ -36,6 +37,7 @@ export const kindMap = {
     "activecode": ActiveCodeCreator,
     "multiplechoice": MultipleChoiceCreator,
     "shortanswer": ShortAnswerCreator,
+    "doenet": DoenetMLCreator 
 }
 
 /**
@@ -57,6 +59,8 @@ export function EditorContainer(props) {
             return <ExerciseEditor component={<MultipleChoiceCreator />} editonly={props.editonly}/>;
         case "shortanswer":
             return <ExerciseEditor component={<ShortAnswerCreator />} editonly={props.editonly}/>;
+        case "doenet":
+            return <ExerciseEditor component={<DoenetMLCreator />} editonly={props.editonly}/>;
         default:
             return (
                 <p>We have not built an editor for this question type yet.</p>

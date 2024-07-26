@@ -7,6 +7,7 @@ const componentOptions = [
     {title: "ActiveCode", value: "activecode"},
     {title: "Multiple Choice", value: "mchoice"},
     {title: "Short Answer", value: "shortanswer"},
+    {title: "DoenetML", value: "doenet"},
 ];
 
 const editorSlice = createSlice({
